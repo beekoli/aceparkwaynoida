@@ -1828,9 +1828,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#faq" onclick="closeMobileNav()"><span class="nav-icon">❓</span> FAQs</a>
   </nav>
   <div class="mobile-nav-cta">
-    <a href="tel:+919999135369" class="mnav-call" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">📞 Call: 9999-135-369</a>
+    <a href="tel:+919999135369" class="mnav-call" onclick="logClickToSheet('call_click');window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">📞 Call: 9999-135-369</a>
     <button class="mnav-enquire" type="button" onclick="closeMobileNav(); openModal()">🔥 Get Pre-Launch Price</button>
-    <a href="https://wa.me/919999135369?text=Hi, I am interested in ACE Parkway 2.0 Sector 150 Noida. Please share details." target="_blank" class="mnav-wa" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'whatsapp_click'});">💬 WhatsApp Us</a>
+    <a href="https://wa.me/919999135369?text=Hi, I am interested in ACE Parkway 2.0 Sector 150 Noida. Please share details." target="_blank" class="mnav-wa" onclick="logClickToSheet('whatsapp_click');window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'whatsapp_click'});">💬 WhatsApp Us</a>
   </div>
 </div>
 
@@ -2697,7 +2697,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="footer-bottom">
       © 2025 Property Saraansh. All Rights Reserved. |
       <a href="privacy-policy.html">Privacy Policy</a> | <a href="terms.html">Terms &amp; Conditions</a> |
-      Contact: <a href="tel:+919999135369" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">+91-9999-135-369</a>
+      Contact: <a href="tel:+919999135369" onclick="logClickToSheet('call_click');window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">+91-9999-135-369</a>
     </p>
   </div>
 </footer>
@@ -2705,7 +2705,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ─── STICKY BOTTOM BAR — Mobile only ───────────────────────── -->
 <div class="sticky-bar">
   <div class="sticky-bar-inner">
-    <a href="tel:+919999135369" class="sticky-btn sticky-call" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">
+    <a href="tel:+919999135369" class="sticky-btn sticky-call" onclick="logClickToSheet('call_click');window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'call_click'});">
       📞 Call Now
     </a>
     <button class="sticky-btn sticky-enquire" onclick="openModal()">
@@ -2715,7 +2715,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </div>
 
 <!-- ─── FLOATING WHATSAPP ──────────────────────────────────────── -->
-<a href="https://wa.me/919999135369?text=Hi, I am interested in ACE Parkway 2.0 Sector 150 Noida. Please share the brochure, price list, floor plans and latest offers." target="_blank" class="float-wa" title="Chat on WhatsApp" onclick="window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'whatsapp_click'});">💬</a>
+<a href="https://wa.me/919999135369?text=Hi, I am interested in ACE Parkway 2.0 Sector 150 Noida. Please share the brochure, price list, floor plans and latest offers." target="_blank" class="float-wa" title="Chat on WhatsApp" onclick="logClickToSheet('whatsapp_click');window.dataLayer=window.dataLayer||[];window.dataLayer.push({'event':'whatsapp_click'});">💬</a>
 
 <!-- ─── ENQUIRY MODAL ─────────────────────────────────────────── -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
@@ -2902,16 +2902,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 
   /* ─── GOOGLE SHEETS FORM HANDLER ─── */
-  // STEP 1: Replace the URL below with your Google Apps Script deployment URL
-  // STEP 2: After replacing, upload index.html to GitHub and Vercel will auto-deploy
   var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxV9zBzI4MhuLpeE-0CD5U_VQEqRcJV4aFwTKAqBLiUb9nibC4Hkg2DF_3Si3eyyUmGIA/exec';
 
   function handleSubmit(e, formId) {
     e.preventDefault();
-    var form = document.getElementById(formId);
-    var btn  = form.querySelector('button[type="submit"]');
-    var successId = formId + 'Success';
-    var successEl = document.getElementById(successId);
+    var form      = document.getElementById(formId);
+    var btn       = form.querySelector('button[type="submit"]');
+    var wrapId    = formId === 'heroForm' ? 'heroFormWrapper' : 'modalFormWrapper';
+    var wrapEl    = document.getElementById(wrapId);
+    var successEl = document.getElementById(formId + 'Success');
 
     // Collect all form fields
     var nameEl      = form.querySelector('[name="name"]');
@@ -2922,6 +2921,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var sourceEl    = form.querySelector('[name="source"]');
 
     var data = {
+      lead_type:    'form_submission',
       name:         nameEl     ? nameEl.value.trim()     : '',
       phone:        (ccEl ? ccEl.value : '+91') + (phoneEl ? phoneEl.value.trim() : ''),
       email:        emailEl    ? emailEl.value.trim()    : '',
@@ -2938,12 +2938,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     // Show loading state on button
-    var originalHTML = btn.innerHTML;
-    btn.innerHTML    = 'Submitting…';
-    btn.disabled     = true;
+    btn.innerHTML = '⏳ Submitting…';
+    btn.disabled  = true;
 
     // Send to Google Sheets via Apps Script
-    // mode: 'no-cors' because Apps Script doesn't set CORS headers on deployed URLs
     var submitToSheet = APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'
       ? fetch(APPS_SCRIPT_URL, {
           method:  'POST',
@@ -2951,28 +2949,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify(data)
         })
-      : Promise.resolve(); // skip fetch if URL not yet configured
+      : Promise.resolve();
 
-    submitToSheet
-      .then(function() {
-        // Fire GTM form_submission conversion event
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({
-          'event': 'form_submission',
-          'form_id': formId,
-          'lead_name': data.name,
-          'lead_phone': data.phone,
-          'lead_interest': data.interest
-        });
-        // Redirect to thank-you page
-        window.location.href = 'thankyou.html';
-      })
-      .catch(function() {
-        // On network error still fire event + redirect — lead not lost
-        window.dataLayer = window.dataLayer || [];
-        window.dataLayer.push({ 'event': 'form_submission', 'form_id': formId });
-        window.location.href = 'thankyou.html';
+    function showSuccess() {
+      // Fire GTM conversion event
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event':           'form_submission',
+        'form_id':         formId,
+        'lead_name':       data.name,
+        'lead_phone':      data.phone,
+        'lead_interest':   data.interest
       });
+      // Show inline success, hide form
+      if (wrapEl)    wrapEl.style.display    = 'none';
+      if (successEl) successEl.style.display = 'block';
+      // Redirect to thank-you page after 2.5s (enables GA4 + Ads conversion tracking)
+      setTimeout(function() { window.location.href = 'thankyou.html'; }, 2500);
+    }
+
+    submitToSheet.then(showSuccess).catch(showSuccess);
+  }
+
+  /* ─── CLICK-TO-SHEET: WhatsApp & Call button logging ─── */
+  function logClickToSheet(type) {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') return;
+    var data = {
+      lead_type:    type,
+      name:         type === 'whatsapp_click' ? 'WhatsApp Click' : 'Call Click',
+      phone:        '',
+      email:        '',
+      interest:     '',
+      source:       type,
+      utm_source:   sessionStorage.getItem('utm_source')   || '',
+      utm_medium:   sessionStorage.getItem('utm_medium')   || '',
+      utm_campaign: sessionStorage.getItem('utm_campaign') || '',
+      utm_term:     sessionStorage.getItem('utm_term')     || '',
+      utm_content:  sessionStorage.getItem('utm_content')  || '',
+      gclid:        sessionStorage.getItem('gclid')        || '',
+      landing_url:  sessionStorage.getItem('landing_url')  || window.location.href,
+      timestamp:    new Date().toISOString()
+    };
+    fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      mode:    'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(data)
+    }).catch(function() {}); // silent fail — never block the user
   }
 
   /* ─── FAQ ACCORDION ─── */
