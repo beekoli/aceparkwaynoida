@@ -1,0 +1,19 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.aceparkwaynoida.propertysaraansh.com" }],
+      "destination": "https://aceparkwaynoida.propertysaraansh.com/$1",
+      "permanent": true
+    },
+    { "source": "/overview", "destination": "/#overview", "permanent": false },
+    { "source": "/amenities", "destination": "/#amenities", "permanent": false },
+    { "source": "/pricing", "destination": "/#pricing", "permanent": false },
+    { "source": "/payment-plan", "destination": "/#payment-plan", "permanent": false },
+    { "source": "/floor-plans", "destination": "/#floor-plans", "permanent": false },
+    { "source": "/highlights", "destination": "/#highlights", "permanent": false },
+    { "source": "/location", "destination": "/#location", "permanent": false },
+    { "source": "/gallery", "destination": "/#gallery", "permanent": false },
+    { "source": "/faq", "destination": "/#faq", "permanent": false }
+  ]
+}
